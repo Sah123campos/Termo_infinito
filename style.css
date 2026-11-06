@@ -225,7 +225,7 @@ main {
 .tecla.larga { flex: 1.6; max-width: 80px; font-size: 13px; }
 .tecla.certo { background: var(--certo); }
 .tecla.lugar { background: var(--lugar); }
-.tecla.errado { background: var(--errado); color: #646a7d; }
+.tecla.errado { background: #22252f; color: #4d5263; opacity: .45; }
 .tecla:active { filter: brightness(1.25); }
 
 /* Toast */

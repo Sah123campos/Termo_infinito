@@ -146,7 +146,9 @@
         if (estados[0]) b.classList.add(estados[0]);
         return;
       }
-      if (estados.every((e) => e === 'errado')) { b.classList.add('errado'); return; }
+      // apaga a letra quando ela não serve para nenhum quadro que ainda falta resolver
+      const faltando = estados.filter((_, q) => est.resolvido[q] < 0);
+      if (faltando.length && faltando.every((e) => e === 'errado')) { b.classList.add('errado'); return; }
       if (estados.every((e) => !e)) return;
       // uma faixa de cor por quadro
       const passo = 100 / est.n;
