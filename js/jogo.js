@@ -72,6 +72,23 @@
     return res;
   }
 
+  // Quando as 5 letras da palavra já foram descobertas (verdes + amarelas),
+  // todas as outras letras do alfabeto ficam apagadas, mesmo sem terem sido usadas.
+  function deduzirLetras(q) {
+    const minimo = {};
+    est.tentativas.forEach((t) => {
+      const cores = avaliar(t, est.palavras[q].chave);
+      const conta = {};
+      cores.forEach((c, i) => { if (c !== 'errado') conta[t[i]] = (conta[t[i]] || 0) + 1; });
+      for (const l in conta) minimo[l] = Math.max(minimo[l] || 0, conta[l]);
+    });
+    const total = Object.values(minimo).reduce((a, b) => a + b, 0);
+    if (total < LETRAS) return;
+    for (const l of 'abcdefghijklmnopqrstuvwxyz') {
+      if (!minimo[l]) est.teclas[q][l] = 'errado';
+    }
+  }
+
   // ---------- Montagem da tela ----------
   function montarTabuleiros() {
     const linhas = tentativasDo(est.n);
@@ -275,6 +292,7 @@
         if (cor === 'certo' || (cor === 'lugar' && antes !== 'certo') || (cor === 'errado' && !antes)) est.teclas[q][l] = cor;
       });
       if (acertou) { est.resolvido[q] = r; novosAcertos.push(q); }
+      deduzirLetras(q);
     }
 
     est.atual = Array(LETRAS).fill('');
