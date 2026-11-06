@@ -1,0 +1,116 @@
+<!doctype html>
+<html lang="pt-BR">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
+  <title>Termo Infinito</title>
+  <meta name="description" content="Adivinhe palavras de 5 letras sem parar: Termo, Dueto, Quarteto, Oiteto e Dezeto infinitos, com modo contra o tempo opcional.">
+  <link rel="stylesheet" href="style.css">
+</head>
+<body>
+  <header class="topo">
+    <button class="icone" id="btnAjuda" aria-label="Como jogar" title="Como jogar">?</button>
+    <h1>Termo <span>Infinito</span></h1>
+    <button class="icone" id="btnTempo" aria-label="Modo contra o tempo" title="Modo contra o tempo">
+      <svg viewBox="0 0 24 24" width="20" height="20" aria-hidden="true"><circle cx="12" cy="13" r="8" fill="none" stroke="currentColor" stroke-width="2"/><path d="M12 9v4l3 2M9 2h6" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"/></svg>
+    </button>
+  </header>
+
+  <nav class="modos" id="modos" aria-label="Modos de jogo">
+    <button data-n="1">Termo</button>
+    <button data-n="2">Dueto</button>
+    <button data-n="4">Quarteto</button>
+    <button data-n="8">Oiteto</button>
+    <button data-n="10">Dezeto</button>
+  </nav>
+
+  <div class="painel">
+    <div class="info"><span class="rotulo">Acertos</span><strong id="placar">0</strong></div>
+    <div class="info" id="infoSequencia"><span class="rotulo">Sequência</span><strong id="sequencia">0</strong></div>
+    <div class="info relogio oculto" id="infoRelogio"><span class="rotulo">Tempo</span><strong id="relogio">0:00</strong></div>
+    <button class="parar oculto" id="btnParar" title="Encerrar a partida contra o tempo">Encerrar</button>
+  </div>
+
+  <main id="area">
+    <div id="tabuleiros" class="tabuleiros"></div>
+    <div id="faixa" class="faixa oculto">
+      <p id="faixaTexto"></p>
+      <button id="btnProxima" class="botao">Próximas palavras</button>
+    </div>
+  </main>
+
+  <div id="teclado" class="teclado" aria-label="Teclado"></div>
+
+  <div id="toast" class="toast" role="status" aria-live="polite"></div>
+
+  <!-- Como jogar -->
+  <div class="modal oculto" id="modalAjuda" role="dialog" aria-modal="true" aria-labelledby="tituloAjuda">
+    <div class="caixa">
+      <button class="fechar" data-fechar aria-label="Fechar">×</button>
+      <h2 id="tituloAjuda">Como jogar</h2>
+      <p>Descubra palavras de <b>5 letras</b>. Cada tentativa vale para todos os quadros ao mesmo tempo.</p>
+      <div class="exemplo">
+        <span class="peca certo">T</span><span class="peca">E</span><span class="peca lugar">R</span><span class="peca">M</span><span class="peca errado">O</span>
+      </div>
+      <p><span class="mini certo"></span> letra certa no lugar certo<br>
+         <span class="mini lugar"></span> a letra existe, mas em outro lugar<br>
+         <span class="mini errado"></span> a letra não está na palavra</p>
+      <p>Acentos e cedilha são preenchidos sozinhos. Clique numa casa da linha atual para mudar a posição do cursor.</p>
+      <h3>Modos (todos infinitos)</h3>
+      <ul>
+        <li><b>Termo</b> – 1 palavra, 6 tentativas</li>
+        <li><b>Dueto</b> – 2 palavras, 7 tentativas</li>
+        <li><b>Quarteto</b> – 4 palavras, 9 tentativas</li>
+        <li><b>Oiteto</b> – 8 palavras, 13 tentativas</li>
+        <li><b>Dezeto</b> – 10 palavras, 15 tentativas</li>
+      </ul>
+      <p>Acertou tudo? Novas palavras aparecem na hora. Quer um desafio? Toque no relógio e veja quantas palavras você acerta no tempo que escolher.</p>
+    </div>
+  </div>
+
+  <!-- Contra o tempo -->
+  <div class="modal oculto" id="modalTempo" role="dialog" aria-modal="true" aria-labelledby="tituloTempo">
+    <div class="caixa">
+      <button class="fechar" data-fechar aria-label="Fechar">×</button>
+      <h2 id="tituloTempo">Contra o tempo</h2>
+      <label class="chave">
+        <input type="checkbox" id="usarTempo">
+        <span class="trilho"><span class="bolinha"></span></span>
+        <span>Jogar contra o tempo</span>
+      </label>
+      <div id="opcoesTempo" class="opcoesTempo">
+        <p>Quantos minutos?</p>
+        <div class="atalhos" id="atalhos">
+          <button data-min="1">1</button>
+          <button data-min="3">3</button>
+          <button data-min="5">5</button>
+          <button data-min="10">10</button>
+        </div>
+        <label class="campo">Outro valor:
+          <input type="number" id="minutos" min="0.5" max="180" step="0.5" value="3"> min
+        </label>
+        <p class="dica">Cada palavra acertada conta 1 ponto. Se as tentativas acabarem, as palavras aparecem e uma nova rodada começa.</p>
+        <p class="recorde" id="recordeTexto"></p>
+      </div>
+      <button class="botao largo" id="btnComecar">Começar</button>
+    </div>
+  </div>
+
+  <!-- Fim do tempo -->
+  <div class="modal oculto" id="modalFim" role="dialog" aria-modal="true" aria-labelledby="tituloFim">
+    <div class="caixa centro">
+      <h2 id="tituloFim">Tempo esgotado!</h2>
+      <p class="grande" id="fimPontos">0</p>
+      <p id="fimTexto"></p>
+      <p class="recorde" id="fimRecorde"></p>
+      <div class="linhaBotoes">
+        <button class="botao" id="btnDeNovo">Jogar de novo</button>
+        <button class="botao secundario" id="btnLivre">Modo livre</button>
+      </div>
+    </div>
+  </div>
+
+  <script src="js/palavras.js"></script>
+  <script src="js/jogo.js"></script>
+</body>
+</html>
