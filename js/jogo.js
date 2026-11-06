@@ -141,6 +141,7 @@
       if (k.length !== 1) return;
       b.classList.remove('certo', 'lugar', 'errado');
       b.style.background = '';
+      b.style.opacity = '';
       const estados = est.teclas.map((t) => t[k]);
       if (est.n === 1) {
         if (estados[0]) b.classList.add(estados[0]);
@@ -149,6 +150,10 @@
       // apaga a letra quando ela não serve para nenhum quadro que ainda falta resolver
       const faltando = estados.filter((_, q) => est.resolvido[q] < 0);
       if (faltando.length && faltando.every((e) => e === 'errado')) { b.classList.add('errado'); return; }
+      // apaga aos poucos: quanto mais quadros sem a letra, mais apagada
+      // (Dueto apaga em 2 passos de 50%, Quarteto em 4, Oiteto em 8, Dezeto em 10 passos de 10%)
+      const semLetra = faltando.filter((e) => e === 'errado').length;
+      if (semLetra) b.style.opacity = (1 - 0.55 * semLetra / faltando.length).toFixed(2);
       if (estados.every((e) => !e)) return;
       // uma faixa de cor por quadro
       const passo = 100 / est.n;
